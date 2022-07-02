@@ -35,6 +35,36 @@ try
                 Console.Write("\nIngrese el ID de la civilización a mostrar: ");
                 int index = Convert.ToInt32(Console.ReadLine())-1;
                 ListaDeCivilizaciones.Civilizations.ElementAt(index).PrintCivilization();
+
+
+                //Uso de la otra api
+                var Url2 = ListaDeCivilizaciones.Civilizations.ElementAt(index).UniqueTech.ElementAt(0);
+                var Conexion2 = (HttpWebRequest)WebRequest.Create(Url2);
+                Conexion2.Method = "GET";
+                Conexion2.ContentType = "application/json";
+                Conexion2.Accept = "application/json";
+                try
+                {
+                    using (WebResponse Respuesta2 = Conexion2.GetResponse())
+                    {
+                        using (Stream SR2 = Respuesta2.GetResponseStream())
+                        {
+                            if (SR2 == null) return;
+                            using (StreamReader SRObjeto2 = new StreamReader(SR2))
+                            {
+                                string RespuestaObjeto2 = SRObjeto2.ReadToEnd();
+                                var TecnologiasUnicas = JsonSerializer.Deserialize<Technology>(RespuestaObjeto2);
+                                //Mostrar
+                                Console.WriteLine("\nInformación de la primera tecnología única:");
+                                TecnologiasUnicas.PrintTechnology();
+                            }
+                        }
+                    }
+                }
+                catch (WebException Excepcion)
+                {
+                    Console.WriteLine("No se pudo acceder a la API.");
+                }
             }
         }
     }
